@@ -24,7 +24,7 @@ serde_json = "1.0"
 time = { version = "0.3", features = ["local-offset"] }
 time-fmt = "0.3"
 time-tz = "1"
-ureq = "1"
+ureq = "2"
 
 [dev-dependencies]
 doc-comment = "0.3"
