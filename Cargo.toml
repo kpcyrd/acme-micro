@@ -15,7 +15,7 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
-base64 = "0.13"
+base64 = "0.21"
 lazy_static = "1.4"
 log = "0.4"
 openssl = "0.10"
