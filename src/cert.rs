@@ -150,16 +150,29 @@ impl Certificate {
         // Display trait produces this format, which is kinda dumb.
         // Apr 19 08:48:46 2019 GMT
         let expires = parse_date(&not_after)?;
-        let dur = expires - time::now();
+        let dur = expires - time::OffsetDateTime::now_utc();
 
-        Ok(dur.num_days())
+        Ok(dur.whole_days())
     }
 }
 
-fn parse_date(s: &str) -> Result<time::Tm> {
+fn parse_date(s: &str) -> Result<time::OffsetDateTime> {
     debug!("Parse date/time: {}", s);
-    let tm = time::strptime(s, "%h %e %H:%M:%S %Y %Z")?;
-    Ok(tm)
+    use time_fmt::parse::TimeZoneSpecifier;
+    use time_tz::{Offset, TimeZone};
+    let (datetime, zonespecifier) =
+        time_fmt::parse::parse_date_time_maybe_with_zone("%h %e %H:%M:%S %Y %Z", s)
+            .context("parsing of date failed")?;
+    let offset_datetime = match zonespecifier {
+        Some(TimeZoneSpecifier::Offset(offset)) => datetime.assume_offset(offset),
+        None => datetime.assume_utc(),
+        Some(TimeZoneSpecifier::Name(name)) => {
+            let zone = time_tz::timezones::get_by_name(name)
+                .ok_or(anyhow::anyhow!("unknown timezone specified"))?;
+            datetime.assume_offset(zone.get_offset_primary().to_utc())
+        }
+    };
+    Ok(offset_datetime)
 }
 
 #[cfg(test)]
@@ -168,7 +181,14 @@ mod test {
 
     #[test]
     fn test_parse_date() {
-        let x = parse_date("May  3 07:40:15 2019 GMT").unwrap();
-        assert_eq!(time::strftime("%F %T", &x).unwrap(), "2019-05-03 07:40:15");
+        let x = parse_date("May  3 07:40:15 2019 GMT")
+            .context("input date parsing failed")
+            .unwrap();
+        assert_eq!(
+            time_fmt::format::format_offset_date_time("%F %T", x)
+                .context("date formatting failed")
+                .unwrap(),
+            "2019-05-03 07:40:15"
+        );
     }
 }
