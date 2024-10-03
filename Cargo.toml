@@ -15,20 +15,20 @@ edition = "2018"
 
 [dependencies]
 anyhow = "1.0"
-base64 = "0.21"
-lazy_static = "1.4"
+base64 = "0.22"
+lazy_static = "1"
 log = "0.4"
 openssl = "0.10"
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 time = { version = "0.3", features = ["local-offset"] }
 time-fmt = "0.3"
 time-tz = "1"
-ureq = "1"
+ureq = "2"
 
 [dev-dependencies]
 doc-comment = "0.3"
-env_logger = { version = "0.10", default-features = false }
+env_logger = { version = "0.11", default-features = false }
 futures = "0.1.25"
 hyper = "0.12"
 regex = "1.4"
