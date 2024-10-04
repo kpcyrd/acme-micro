@@ -13,6 +13,9 @@ keywords = ["letsencrypt", "acme"]
 categories = ["web-programming", "api-bindings"]
 edition = "2018"
 
+[features]
+vendored = ["openssl/vendored"]
+
 [dependencies]
 anyhow = "1.0"
 base64 = "0.22"
